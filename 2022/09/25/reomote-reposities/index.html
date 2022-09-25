@@ -6,8 +6,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="Hexo">
     <meta name="description" content="title: reomote.repositiesdate: 2022-09-25 23:35:38tags: maven仓库
-repositorycould find 
-">
+_REMOTE.REPOSITORIES文件12345#Thu Jan 24 11:42:29 CST 2019">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -466,7 +465,26 @@ repositorycould find
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <p>title: reomote.reposities<br>date: 2022-09-25 23:35:38<br>tags: maven仓库</p>
-<h1 id="repository"><a href="#repository" class="headerlink" title="repository"></a>repository</h1><p>could find </p>
+<h2 id="REMOTE-REPOSITORIES文件"><a href="#REMOTE-REPOSITORIES文件" class="headerlink" title="_REMOTE.REPOSITORIES文件"></a><strong>_REMOTE.REPOSITORIES文件</strong></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#Thu Jan <span class="number">24</span> <span class="number">11</span>:<span class="number">42</span>:<span class="number">29</span> CST <span class="number">2019</span></span><br><span class="line">logback-parent-<span class="number">1.1</span><span class="number">.1</span>.pom&gt;nexus-aliyun=</span><br><span class="line">logback-parent-<span class="number">1.1</span><span class="number">.1</span>.pom&gt;nexus-xx=</span><br><span class="line">logback-parent-<span class="number">1.1</span><span class="number">.1</span>.pom&gt;mirror-all=</span><br><span class="line">这里的nexus-aliyun表示setting.xml中配置的私服id</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">其中</span><br><span class="line">这个文件存储的是每次从私服或者中央仓库下载的jar包的信息。</span><br><span class="line">该logback-parent只有pom管理,所以没有jar</span><br><span class="line"></span><br><span class="line">第<span class="number">3</span>行：表示该pom第一次从nexus-aliyun(阿里云镜像)来的</span><br><span class="line"></span><br><span class="line">第<span class="number">4</span>行：表示更换远程仓库nexus-xx(xx私服)且该私服存在该pom,那么就将该私服地址写入到_remote.repositories.</span><br><span class="line"></span><br><span class="line">第<span class="number">5</span>行：表示镜像服务器mirror-all存在该pom</span><br><span class="line"></span><br><span class="line">只有存在该资源的镜像或私服才会将私服或镜像的id写入到_remote.repositories中</span><br><span class="line"></span><br><span class="line">参考资料:https:<span class="comment">//www.cnblogs.com/mySummer/p/9453777.html</span></span><br></pre></td></tr></table></figure>
+
+<p>:smiling_imp:  假设我们更换了私服地址为nexus-abc,并且该私服不存在该资源,那么就会生成logback-parent-1.1.1.pom.lastUpdated文件;</p>
+<p>也就是说,_remote.repositories文件，标示该资源的来源，如果你有这个_remote.repositories，<strong>那就会在访问本地的同时，必须确保远程上有才行</strong>(这里的远程是setting文件中配置的镜像或远程仓库,用id来进行关联,详情见标题2._remote…)，否则就会报错;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Could not resolve dependencies <span class="keyword">for</span> project com-hallo-mybatis:generator:jar:<span class="number">1.0</span>-SNAPSHOT: </span><br><span class="line">The following artifacts could not be resolved: com.tencent.tsf:spring-cloud-tsf-dependencies:pom:<span class="number">1.1</span><span class="number">.1</span>-</span><br><span class="line">RELEASE, com.tencent.tsf:spring-cloud-tsf-sleuth:jar:<span class="number">1.1</span><span class="number">.1</span>-RELEASE, com.tencent.tsf:spring-cloud-tsf-</span><br><span class="line">auth:jar:<span class="number">1.1</span><span class="number">.1</span>-RELEASE: Failure to find com.tencent.tsf:spring-cloud-tsf-dependencies:pom:<span class="number">1.1</span><span class="number">.1</span>-RELEASE in </span><br><span class="line">&lt;span style=<span class="string">&quot;color:#ab4642&quot;</span>&gt;http:<span class="comment">//***:8081/repository/public/ was cached in the local repository, resolution </span></span><br><span class="line">will not be reattempted until the update interval of <span class="keyword">public</span> has elapsed or updates are forced&lt;/span&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>该文件可能会导致的<strong>错误</strong>：could not find artifact……</p>
+<p>按常理上面这个错误就是因为缺少依赖才报错的，因此通过到仓库确认，依赖都在。。。</p>
+<p>通过研究一翻，发现是_remote.repositories导致的问题，以下为其内容：</p>
+<p>_remote.repositories文件，标示该资源的来源，如果你有这个_remote.repositories，那就会在访问本地的同时，必须确保远程上有才行(这里的远程是setting文件中配置的镜像或远程仓库</p>
+<p>解决办法：删除报错包对应仓库中的_remote.repositories文件</p>
+<p>明：如果你私服里面没有jar包。本地仓库有remote.repositories文件，idea无法加载你本地jar包会出现maven依赖爆红，找不到本地jar包。这种情况就需要删除remote.repositories文件。</p>
+<p>1.将如下脚本复制并做成可执行文件，cleanRemoteFile.bat。</p>
+<p>2.修改REPOSITORY_PATH路径，指定到自己的repository仓库路径并且cleanRemoteFile.bat文件要与仓库在同级目录下。</p>
+<p>3.双击执行。</p>
+<p>set REPOSITORY_PATH&#x3D;C:\Users\fangxing37939\Desktop\test\repository<br>rem searching…<br>for &#x2F;f “delims&#x3D;” %%i in (‘dir &#x2F;b &#x2F;s “%REPOSITORY_PATH%*_remote.repositories*”‘) do (<br>    del &#x2F;s &#x2F;q %%i<br>)<br>rem finished<br>pause<br>PS:将脚本中的_remote.repositories替换为lastUpdated，可删除.lastUpdated文件(失败的jar包)。</p>
 
                 
             </div>
